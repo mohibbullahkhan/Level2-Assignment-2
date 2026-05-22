@@ -66,7 +66,7 @@ export const signup = asyncWrapper<EmptyRouteParams, SignupRequestBody>(async (r
   sendResponse(
     res,
     StatusCodes.CREATED,
-    "User created successfully",
+    "User registered successfully",
     toPublicUser(createdUserResult.rows[0])
   );
 });
@@ -100,7 +100,8 @@ export const login = asyncWrapper<EmptyRouteParams, LoginRequestBody>(async (req
       name: user.name,
       role: user.role
     },
-    config.jwtSecret
+    config.jwtSecret,
+    { expiresIn: "7d" }
   );
   const data: LoginResponse = {
     token,
