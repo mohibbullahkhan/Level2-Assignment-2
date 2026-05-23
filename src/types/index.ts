@@ -1,6 +1,6 @@
 import type { ParamsDictionary, Query } from "express-serve-static-core";
 
-export type UserRole = "contributor" | "maintainer";
+export type UserRole = "user" | "admin" | "contributor" | "maintainer";
 
 export type IssueType = "bug" | "feature_request";
 
@@ -10,8 +10,8 @@ export type SortOrder = "newest" | "oldest";
 
 export interface AppConfig {
   port: number;
+  connectionString: string;
   jwtSecret: string;
-  databaseUrl: string;
 }
 
 export interface AuthUser {
@@ -20,7 +20,7 @@ export interface AuthUser {
   role: UserRole;
 }
 
-export interface UserRow {
+export interface UserDbRow {
   id: number;
   name: string;
   email: string;
@@ -30,7 +30,7 @@ export interface UserRow {
   updated_at: Date;
 }
 
-export interface PublicUser {
+export interface UserResponse {
   id: number;
   name: string;
   email: string;
@@ -39,10 +39,38 @@ export interface PublicUser {
   updated_at: Date;
 }
 
-export interface Reporter {
-  id: number;
-  name: string;
-  role: UserRole;
+export interface LoginRequest {
+  email?: unknown;
+  password?: unknown;
+}
+
+export interface SignupRequestBody {
+  name?: unknown;
+  email?: unknown;
+  password?: unknown;
+}
+
+export interface LoginResponse {
+  accessToken: string;
+  user: UserResponse;
+}
+
+export interface EmptyRouteParams extends ParamsDictionary {}
+
+export interface IdRouteParams extends ParamsDictionary {
+  id: string;
+}
+
+export interface ApiSuccessResponse<T> {
+  success: true;
+  message: string;
+  data: T;
+}
+
+export interface ApiErrorResponse {
+  success: false;
+  message: string;
+  errors: string;
 }
 
 export interface IssueRow {
@@ -54,6 +82,12 @@ export interface IssueRow {
   reporter_id: number;
   created_at: Date;
   updated_at: Date;
+}
+
+export interface Reporter {
+  id: number;
+  name: string;
+  role: UserRole;
 }
 
 export interface IssueWithReporter extends IssueRow {
@@ -84,31 +118,8 @@ export interface UpdateIssueRequestBody {
   type?: unknown;
 }
 
-export interface EmptyRouteParams extends ParamsDictionary {}
-
-export interface IdRouteParams extends ParamsDictionary {
-  id: string;
-}
-
 export interface IssueFilterQuery extends Query {
   sort?: string;
   type?: string;
   status?: string;
-}
-
-export interface ApiSuccessResponse<T> {
-  success: true;
-  message: string;
-  data: T;
-}
-
-export interface ApiErrorResponse {
-  success: false;
-  message: string;
-  errors: string;
-}
-
-export interface LoginResponse {
-  token: string;
-  user: PublicUser;
 }

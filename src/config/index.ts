@@ -5,8 +5,8 @@ dotenv.config();
 
 const config: AppConfig = {
   port: Number(process.env.PORT) || 5000,
+  connectionString: process.env.CONNECTIONSTRING || "",
   jwtSecret: process.env.JWT_SECRET || "devpulse-development-secret",
-  databaseUrl: process.env.DATABASE_URL || ""
 };
 
 export default config;

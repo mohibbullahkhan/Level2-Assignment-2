@@ -6,7 +6,12 @@ import type { AuthUser, UserRole } from "../types";
 import { createHttpError } from "../utility";
 
 const isUserRole = (value: unknown): value is UserRole => {
-  return value === "contributor" || value === "maintainer";
+  return (
+    value === "user" ||
+    value === "admin" ||
+    value === "contributor" ||
+    value === "maintainer"
+  );
 };
 
 const isAuthUser = (value: unknown): value is AuthUser => {
@@ -24,10 +29,15 @@ const isAuthUser = (value: unknown): value is AuthUser => {
 };
 
 export const auth: RequestHandler = (req, _res, next): void => {
-  const token = req.headers.authorization;
+  const token = req.headers.authorization as string | undefined;
 
   if (!token) {
-    next(createHttpError(StatusCodes.UNAUTHORIZED, "Authorization token is required"));
+    next(
+      createHttpError(
+        StatusCodes.UNAUTHORIZED,
+        "Authorization token is required",
+      ),
+    );
     return;
   }
 
@@ -35,13 +45,40 @@ export const auth: RequestHandler = (req, _res, next): void => {
     const decodedToken = jwt.verify(token, config.jwtSecret);
 
     if (!isAuthUser(decodedToken)) {
-      next(createHttpError(StatusCodes.UNAUTHORIZED, "Invalid authorization token"));
+      next(
+        createHttpError(
+          StatusCodes.UNAUTHORIZED,
+          "Invalid authorization token",
+        ),
+      );
       return;
     }
 
     req.user = decodedToken;
     next();
   } catch (error: unknown) {
-    next(createHttpError(StatusCodes.UNAUTHORIZED, "Invalid authorization token"));
+    next(
+      createHttpError(StatusCodes.UNAUTHORIZED, "Invalid authorization token"),
+    );
   }
+};
+
+export const authorize = (...roles: UserRole[]): RequestHandler => {
+  return (req, _res, next): void => {
+    const user = req.user;
+
+    if (!user) {
+      next(
+        createHttpError(StatusCodes.UNAUTHORIZED, "Authentication is required"),
+      );
+      return;
+    }
+
+    if (!roles.includes(user.role)) {
+      next(createHttpError(StatusCodes.FORBIDDEN, "Access is forbidden"));
+      return;
+    }
+
+    next();
+  };
 };

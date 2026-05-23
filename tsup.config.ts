@@ -1,10 +1,10 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["src/app.ts"],
+  entry: ["src/server.ts"],
   outDir: "dist",
   format: ["cjs"],
   target: "node18",
   clean: true,
-  sourcemap: true
+  sourcemap: true,
 });
