@@ -15,7 +15,7 @@ app.use(cors());
 app.get("/", (_req, res) => {
   res.status(200).json({
     success: true,
-    message: "DevPulse API is running",
+    message: "DevPulse API is running smoothly",
     data: null,
   });
 });
