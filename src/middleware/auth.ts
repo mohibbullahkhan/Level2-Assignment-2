@@ -29,7 +29,11 @@ const isAuthUser = (value: unknown): value is AuthUser => {
 };
 
 export const auth: RequestHandler = (req, _res, next): void => {
-  const token = req.headers.authorization as string | undefined;
+  const authorizationHeader = req.headers.authorization;
+  const token =
+    authorizationHeader?.startsWith("Bearer ")
+      ? authorizationHeader.slice(7).trim()
+      : authorizationHeader?.trim();
 
   if (!token) {
     next(
